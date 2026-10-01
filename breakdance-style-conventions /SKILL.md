@@ -52,6 +52,63 @@ Some existing classes exist because a cleaner native way to do the same thing wa
 ## 8. Agency-wide shared components — separate prefix from site-specific work
  
 Components built once and reused across multiple client sites (not specific to any one site) get their own agency-level prefix (`bw-`), distinct from any individual site's prefix and distinct from generic unprefixed utilities. This is a third naming tier, not a variant of the other two: site prefix = specific to this site's content/structure; `bw-` = shared agency component library; no prefix = generic single-purpose utility usable anywhere.
+
+## 9. Mixed-content sites — basic vs fundamental elements
+
+Breakdance 3.x has two element families, and sites built before or across the betas usually contain both.
+
+- **Fundamentals** render with a `bde-f-` class (`bde-f-container`, `bde-f-text`, `bde-f-image`). They ship **no default CSS**: what you write is what renders.
+- **Basic elements** render with a plain `bde-` class (`bde-div`, `bde-text`, `bde-column`, `bde-section`). They ship **hidden base CSS** that does not appear in the element's design panel or its custom CSS field.
+
+The one that causes most of the trouble:
+
+```css
+.bde-div { display:flex; flex-direction:column; align-items:flex-start; text-align:left; max-width:100%; position:relative; background-size:cover; }
+```
+
+This means a class that only sets `display:flex` on a basic Div still lays out as a column. Its children also shrink to their content width, and `justify-content: space-between` appears to do nothing.
+
+**How to tell which family an element belongs to:** check the rendered class (`bde-f-` or `bde-`). In the element tree, fundamentals usually hold registered selectors (by ID). Older basic elements often hold loose class strings, and some of those are not registered selectors at all.
+
+### Before styling — check
+
+1. **Read the hidden defaults.** Render the post or template with its CSS included, then read `element_default_css` for every basic element type you are about to style.
+   - As of beta 9, the per-element CSS lookup returns Div, Text, Image, RichText and TextLink as "missing" (bug reported), so don't rely on it for those.
+   - Custom elements (Brighter BD Elements) and other built-ins return correctly.
+2. **Check every class you will touch.** Is it a registered selector? Is it used anywhere else on the site?
+   - If a class is unregistered, scope a nested rule under a registered parent. Don't register a new global class just to style it.
+   - **Before reusing an existing class on a new or rebuilt element, expand it and inspect its nested children** (`& > div`, `& > div:first-child` and so on), not just its own properties. Nested rules don't show on the element, and they reapply the old structure's layout to whatever the new element contains. On early-beta sites, assume a reused class carries baggage until you've checked.
+3. **Read existing selector properties back before changing them.** Importing a selector replaces its properties; it does not merge.
+
+### While styling — declare, don't inherit
+
+Any class applied to a basic element must restate every layout property that the element's defaults set: `display`, `flex-direction`, `align-items` and `width` (plus `justify-content` where it matters).
+
+Never write `display:flex` on its own against a basic Div. The explicit declarations win whatever the element type, so the rule still holds if the wrapper is later swapped to a fundamental.
+
+### After styling — verify
+
+1. Read the selectors back. The import should report no dropped properties, other than ones you removed on purpose.
+2. Check the result visually against a real record. For templates, render with a real product or post as context.
+3. Purge LiteSpeed before judging the frontend.
+
+### When to swap or rebuild instead of restyling
+
+| Situation | Approach |
+| --- | --- |
+| Restyling a block that works structurally | Keep the basic elements and apply "declare, don't inherit". This is the lowest-risk option on live sites and the default. |
+| Restructuring that block anyway, or fighting the basic wrapper's defaults on more than a few properties | Swap the wrapper to a fundamental Container, move the children into it, and give it a fresh role-named class. Reuse an existing class only if fundamentals already use it. |
+| The section is being redesigned, not just restyled | Rebuild it from fundamentals, and delete the old section in the same pass. |
+
+### Naming — don't encode the element family
+
+Don't use family-specific prefixes such as `cns_f_` or `cns_b_`. The reasoning is the same as in section 1: a name says what a selector *is*, not how it is currently built.
+
+- The family is already visible in the rendered class (`bde-f-` or `bde-`), so the name doesn't need to carry it.
+- A family prefix becomes wrong the moment a wrapper is swapped.
+- To track migration progress, use selector collections or folders.
+
+*Origin: CNS single-product template, Oct 2026. The price block and specs box were shrinking and stacking because of the `.bde-div` defaults. Fixed with explicit layout declarations; no rebuild was needed.*
  
 ## Open / not yet decided
  
