@@ -110,6 +110,19 @@ Don't use family-specific prefixes such as `cns_f_` or `cns_b_`. The reasoning i
 
 *Origin: CNS single-product template, Oct 2026. The price block and specs box were shrinking and stacking because of the `.bde-div` defaults. Fixed with explicit layout declarations; no rebuild was needed.*
  
+## 10. Brighter BD Elements — which custom elements to use
+
+Only these Brighter BD Elements are current. Use them on new builds and rebuilds:
+
+- `Scos_*` (Aggregate Review, Breadcrumbs, FAQs, Review Card, TL;DR). They output SCOS data and schema, so there's no fundamental equivalent.
+- `Accordion_Content_Extended`
+- `TableRows`, `Table_Cell`, `Table_Text`
+- `Text_Extended`
+
+**Retired. Don't place these, even though they still appear in element slug and schema lookups:** `Definition`, `Definitions_Box`, `Description_Text`, `Extended_Wrapper`, `Section_Simple`, `Summary`. Fundamental elements replaced them. They are hidden from the builder's Add panel (`addPanelRules => ['alwaysHide' => true]`) but stay registered so existing pages keep rendering.
+
+When you meet a retired element on a page, treat it like a basic element under section 9. Restyle it in place if the block works. Swap it for fundamentals if you're restructuring or redesigning that section anyway.
+
 ## Open / not yet decided
  
 - **Color token naming convention** — Vanessa is still working out a standard pattern (semantic/role-based naming — primary, secondary, neutral, accent — layered over a raw palette tier, roughly following Tier 1 raw hues → Tier 2 semantic aliases). Not locked yet. Do not assume or invent a color-naming scheme in the absence of site-specific instruction — ask, or use whatever convention that site's design system already has, until this section is filled in.
