@@ -329,3 +329,9 @@ Stated by Vanessa 2026-10-07: placeholder and real images go in Breakdance's fun
 Confirmed 2026-10-08 on Brighter Websites: any `&` in `html-to-page` markup, typed raw or as `&amp;`, is saved into the element's text as the five characters `&amp;`. Browsers still display "&", so the front end looks right, but the builder field shows `&amp;` and a later hand edit can double-escape it.
 
 **After any `html-to-page` build whose copy contains `&`,** follow up with `edit-post` and set those text fields again with a plain `&`. `edit-post` stores it correctly. Check with `preview-element`: a correct field renders a bare `&` in the HTML; a double-encoded one renders `&amp;`.
+
+## 27. Legacy string classes (`settings.advanced.classes`) can't be edited through the MCP
+
+Confirmed 2026-10-08 on Brighter Websites: older Essential elements (e.g. `EssentialElements\Section`) can hold classes as a plain string array in `settings.advanced.classes`, not as selector IDs in `meta.classes`. `get-post-tree` shows them, but `edit-post` rejects any write to that key (not in the element schema), so the MCP cannot add or remove them. GA tracking classes like `ga-hrcy-*` commonly live here.
+
+**To retire one:** remove it in the builder (Advanced > Classes), or neutralise it at the source (pause the GTM trigger that listens for it). It also goes when the section is rebuilt from Fundamentals. Don't try to delete a matching global selector to remove it: the string class isn't linked to the selector and keeps rendering.
