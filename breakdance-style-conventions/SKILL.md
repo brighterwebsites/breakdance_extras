@@ -41,9 +41,15 @@ Hero and section background images are always an image element (§25), never CSS
 
 Hard rule, no exceptions.
 
-## 4. Hero fonts — max 2 styles
+## 4. Hero fonts — max 2 font files
 
-Max 2 font styles per hero section, counting weight as a style (Barlow Condensed Bold + Inter Regular = 2, not 1). Exists so every hero font can be preloaded — don't add a third weight/family even for a small touch.
+Max 2 font **files** per hero section, so every hero font can be preloaded. Count files, not weights:
+- A **static** font ships one file per weight, so each weight counts (Barlow Condensed Bold + Inter Regular = 2 files).
+- A **variable** font ships one file covering its whole weight range (e.g. Nata Sans 100–900), so any number of its weights counts as 1.
+
+Check which kind each font is before counting. Don't add a third file even for a small touch.
+
+*Updated 2026-10-08 (was "max 2 styles, weight counts as a style"): the cap exists for preloading, and a variable font's weights cost no extra preload.*
 
 ## 5. Third-party/infrastructure classes — leave untouched
 
@@ -60,6 +66,8 @@ Some classes exist only because a cleaner native mechanism wasn't known/availabl
 ## 8. Agency-shared components — their own prefix
 
 Components built once and reused across multiple client sites get the agency prefix `bw-`. Three naming tiers: site prefix = this site's content/structure; `bw-` = shared agency component library; no prefix = generic single-purpose utility usable anywhere. `bw-` components consume only the standard semantic tokens (§10), which is what lets them drop onto any site unchanged.
+
+**Brighter Websites' own site** (brighterwebsites.com.au) uses `bws_` as its site prefix, so its site-specific selectors never blur with the shared `bw-` tier. Set 2026-10-08; older `bw-`/`bw_` selectors on that site are being retired page by page into a "BWS" selector collection.
 
 ## 9. Elements — prefer Fundamentals; handle mixed-content sites
 
@@ -118,6 +126,15 @@ So a class that only sets `display:flex` on a basic Div still lays out as a colu
 **Colours are Variables, not the Global Colours palette.** The 3.0 selector colour picker doesn't expose `colors.palette` swatches, only registered variables. Register every colour as a colour variable. On existing sites, move palette colours into Variables (same names and values), then empty the palette once everything is migrated. The palette is likely to be deprecated: once its colours are removed, new colours can't be added to it in the builder. Where `set-global-settings` needs a colour (`colors.background/text/headings/links`, button backgrounds), point it at `var(--c-…)`, not a raw hex. Don't populate the big palette swatch array — that's exactly what turned into "rebuilt a number of times, lots of CSS bloat" on Guerilla Steel (2026-08-16).
 
 **Keep the global stylesheet as empty as possible.** Don't define tokens in a `:root {}` block in Global Settings > Code, and don't load fonts with `@import`: registering a font as a font-family variable makes Breakdance load it. Move any remaining global CSS (base element styles, form and button styling) into global selectors, so it's visible and editable in the selector panel. Leave only what can't live anywhere else, such as `@keyframes`.
+
+### Link variables, never type them into design inputs
+
+**Never type `var(--x)` into a builder design-setting input** (a size, colour, spacing or weight field on an element or selector). Pick the variable from the input's variable picker instead.
+- **Why:** a picked variable is stored by ID (`{var-<uuid>}`), so renaming the variable updates every place it's used. A typed `var(--x)` is plain text: rename the variable and that link silently breaks.
+- **Exceptions, only when absolutely necessary:** a control with no variable picker, or a custom CSS block (gradients, multi-value shorthands). Keep these to a minimum.
+- **AI/MCP work:** `insert-stylesheet` and `html-to-page` store `var(--name)` of a *registered* variable as a linked ID, so authoring through them is safe. Verify by reading the selector back (`get-css-selectors`, `include_properties`) and checking for `{var-…}`. Element `design` properties set with `edit-post` take the same `{var-<uuid>}` form.
+- **Gradients are the trap:** `insert-stylesheet` parses `background: linear-gradient(… var(--x) …)` into the gradient control with the `var()` typed inside it. Use a linked solid colour (plus opacity if needed), or accept it as a documented custom-CSS exception.
+- **When one is found:** flag it to Vanessa to fix or approve. Don't leave it silently.
 
 ### Naming standard — type prefix, then name
 
