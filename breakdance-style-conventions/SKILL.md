@@ -323,3 +323,9 @@ Stated by Vanessa 2026-10-07. Phone, email, business name and similar facts live
 ## 25. Images in AI builds — the fundamental Image element
 
 Stated by Vanessa 2026-10-07: placeholder and real images go in Breakdance's fundamental Image element (the AI-preferred image element; confirm its slug with `get-element-slugs`, and check which element `html-to-page` maps a plain `<img>` to, on first use per site), never as a CSS background (§3) or a custom wrapper. Placeholders are real `<img>` elements with final dimensions, `alt` and loading/fetchpriority set, so replacing one later is only a media swap.
+
+## 26. `html-to-page` stores `&` as the literal text `&amp;`
+
+Confirmed 2026-10-08 on Brighter Websites: any `&` in `html-to-page` markup, typed raw or as `&amp;`, is saved into the element's text as the five characters `&amp;`. Browsers still display "&", so the front end looks right, but the builder field shows `&amp;` and a later hand edit can double-escape it.
+
+**After any `html-to-page` build whose copy contains `&`,** follow up with `edit-post` and set those text fields again with a plain `&`. `edit-post` stores it correctly. Check with `preview-element`: a correct field renders a bare `&` in the HTML; a double-encoded one renders `&amp;`.
