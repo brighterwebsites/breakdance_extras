@@ -317,6 +317,7 @@ Stated by Vanessa 2026-10-07. Phone, email, business name and similar facts live
 ```
 
   `sms:` links use the same pattern with `return 'sms:' . $clean_phone;` (add `?&body=` + urlencoded text for a pre-filled SMS).
+- **In `html-to-page` markup** (verified 2026-10-08): link `<a bd-href="phpreturn" bd-params='{"code":"return \"tel:\" . str_replace(\" \", \"\", get_option(\"scos_biz_phone_number\"));"}'>` and label `<span bd-bind="shortcode" bd-params='{"shortcode":"[business_info setting=\"phone_number\"]"}'>`. Social profile URLs: `bd-href="shortcode"` with `[business_info setting="social_link_linkedin"]` (also `_facebook`, `_instagram`, `_youtube`, `_twitter`, `_pinterest`). `beforecontent` in `bd-params` prefixes text ("Call ").
 - `breakdance_dynamic` is only registered during a Breakdance front-end render: `do_shortcode()` from WP-CLI returns it unexpanded. Verify with `preview-post`, not `wp eval`.
 - Field reference: https://brighterwebsites.com.au/software/business-information/ (request with `Accept: text/markdown` for clean text). Option keys are `scos_biz_` + the field id (`phone_number`, `email`, `business_offering`, `service_area`, `provider_mobility` static/dynamic, `price_tier` literal `$`–`$$$$`).
 
