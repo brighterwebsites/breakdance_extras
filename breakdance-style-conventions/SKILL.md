@@ -335,3 +335,11 @@ Confirmed 2026-10-08 on Brighter Websites: any `&` in `html-to-page` markup, typ
 Confirmed 2026-10-08 on Brighter Websites: older Essential elements (e.g. `EssentialElements\Section`) can hold classes as a plain string array in `settings.advanced.classes`, not as selector IDs in `meta.classes`. `get-post-tree` shows them, but `edit-post` rejects any write to that key (not in the element schema), so the MCP cannot add or remove them. GA tracking classes like `ga-hrcy-*` commonly live here.
 
 **To retire one:** remove it in the builder (Advanced > Classes), or neutralise it at the source (pause the GTM trigger that listens for it). It also goes when the section is rebuilt from Fundamentals. Don't try to delete a matching global selector to remove it: the string class isn't linked to the selector and keeps rendering.
+
+## 28. Grid images — set a real `sizes` attribute, or the browser downloads the full-size file
+
+Confirmed 2026-10-08 on Brighter Websites: a media-library image in the Fundamental Image element renders WordPress's default `sizes="(max-width: {full}px) 100vw, {full}px"`. In a multi-column grid that tells the browser each image is full-viewport wide, so desktop pulls the 1200–1800px original for a ~300px tile.
+
+**When an image sits in a grid or column,** add a `sizes` entry in the element's attributes (`settings.advanced.attributes`) that matches the layout, e.g. `(max-width: 1023px) 50vw, 25vw` for a 4-up grid that drops to 2-up at tablet portrait. It replaces the default cleanly (verified with `preview-element`; no duplicate attribute). Full-width heroes keep the default.
+
+Also: a `get-post-tree` snapshot of `media.alt` can be stale or empty. Check the rendered `alt` with `preview-element` before reporting missing alt text.
